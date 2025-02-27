@@ -11,7 +11,7 @@
 <br>
 ✉ Corresponding author
 <br>
-*This work was done while Xiankang He was visiting Westlake University.
+* Equal Contribution. This work was done while Xiankang He was visiting Westlake University.
 
 <a href="http://arxiv.org/abs/2502.19204"><img src='https://img.shields.io/badge/ArXiv-2502.19204-red' alt='Paper PDF'></a>
 <a href='https://distill-any-depth-official.github.io'><img src='https://img.shields.io/badge/Project-Page-green' alt='Project Page'></a>

@@ -120,8 +120,9 @@ If you find our work useful, please cite the following paper:
 ## Related Projects
 
 - [Depth Anything V2](https://github.com/DepthAnything/Depth-Anything-V2)
+- [MiDaS](https://github.com/isl-org/MiDaS)
+- [GenPercept](https://github.com/aim-uofa/GenPercept)
 - [GeoBench: 3D Geometry Estimation Made Easy](https://github.com/aim-uofa/geobench)
-- [What Matters When Repurposing Diffusion Models for General Dense Perception Tasks?](https://github.com/aim-uofa/GenPercept)
 - [HDN](https://github.com/icoz69/HDN)
 
 

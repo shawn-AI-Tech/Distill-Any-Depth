@@ -94,7 +94,7 @@ for model in "${model_list[@]}"; do
         --checkpoint 'checkpoint/large/model.safetensors' \  # Path to the pre-trained model checkpoint
         --processing_res 0 \  # Resolution for processing (0 to keep original resolution)
         --output_dir output/${model} \  # Directory to save the output results
-        --arch_name 'depthanything' \  # Model architecture name (must match the pre-trained model)
+        --arch_name 'depthanything-large' \  # Model architecture name (must match the pre-trained model)
 done
 ```
 

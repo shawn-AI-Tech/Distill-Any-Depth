@@ -10,5 +10,5 @@ for model in "${model_list[@]}"; do
         --checkpoint 'checkpoint/large/model.safetensors' \
         --processing_res 0 \
         --output_dir output/${model} \
-        --arch_name 'depthanything'
+        --arch_name 'depthanything-large'
 done

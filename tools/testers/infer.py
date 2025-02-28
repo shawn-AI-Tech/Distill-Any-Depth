@@ -14,17 +14,20 @@ from tqdm.auto import tqdm
 from torchvision.transforms import Compose
 from distillanydepth.midas.transforms import Resize, NormalizeImage, PrepareForNet
 from distillanydepth.modeling.archs.dam.dam import DepthAnything
+from distillanydepth.depth_anything_v2.dpt import DepthAnythingV2
 from distillanydepth.utils.image_util import chw2hwc, colorize_depth_maps
 from distillanydepth.utils.mmcv_config import Config
 from detectron2.utils import comm
 from detectron2.engine import launch
 import torch.nn.functional as F
 from glob import glob
+# from huggingface_hub import hf_hub_download
+from safetensors.torch import load_file  # 导入 safetensors 库
 
 # Argument parser
 def argument_parser():
     parser = argparse.ArgumentParser(description="Run single-image depth/surface normal estimation.")
-    parser.add_argument("--arch_name", type=str, default="marigold", choices=['marigold', 'depthanything', 'midas'], help="Select a method for inference.")
+    parser.add_argument("--arch_name", type=str, default="depthanything-large", choices=['depthanything-large', 'depthanything-base', 'midas'], help="Select a method for inference.")
     parser.add_argument("--mode", type=str, default="disparity", choices=['rel_depth', 'metric_depth', 'disparity'], help="Select a method for inference.")
     parser.add_argument("--checkpoint", type=str, default="prs-eth/marigold-v1-0", help="Checkpoint path or hub name.")
     parser.add_argument("--unet_ckpt_path", type=str, default=None, help="Checkpoint path for unet.")
@@ -40,13 +43,40 @@ def argument_parser():
 
 # Helper function for model loading
 def load_model_by_name(arch_name, checkpoint_path, device):
-    if arch_name == 'depthanything':
-        if '.safetensors' in checkpoint_path:
-            model = DepthAnything.from_pretrained(os.path.dirname(checkpoint_path)).to(device)
-        else:
-            raise NotImplementedError("Model architecture not implemented.")
+    model_kwargs = dict(
+        vitb=dict(
+            encoder='vitb',
+            features=128,
+            out_channels=[96, 192, 384, 768],
+        ),
+        vitl=dict(
+            encoder="vitl", 
+            features=256, 
+            out_channels=[256, 512, 1024, 1024], 
+            use_bn=False, 
+            use_clstoken=False, 
+            max_depth=150.0, 
+            mode='disparity',
+            pretrain_type='dinov2',
+            del_mask_token=False
+        )
+    )
+
+    # Load model
+    if arch_name == 'depthanything-large':
+        model = DepthAnything(**model_kwargs['vitl']).to(device)
+        # checkpoint_path = hf_hub_download(repo_id=f"xingyang1/Distill-Any-Depth", filename=f"large/model.safetensors", repo_type="model")
+
+    elif arch_name == 'depthanything-base':
+        model = DepthAnythingV2(**model_kwargs['vitb']).to(device)
+        # checkpoint_path = hf_hub_download(repo_id=f"xingyang1/Distill-Any-Depth", filename=f"base/model.safetensors", repo_type="model")
+
     else:
         raise NotImplementedError(f"Unknown architecture: {arch_name}")
+    # 使用 safetensors 加载模型权重
+    model_weights = load_file(checkpoint_path)  # safetensors 加载方式
+    model.load_state_dict(model_weights)
+    model = model.to(device)  # 确保模型在正确的设备上
     return model
 
 # Helper function for directory checks

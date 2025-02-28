@@ -8,7 +8,38 @@ from .dinov2 import DINOv2
 from .util.blocks import FeatureFusionBlock, _make_scratch
 from .util.transform import Resize, NormalizeImage, PrepareForNet
 from huggingface_hub import PyTorchModelHubMixin, hf_hub_download
-from geobench.modeling.necks.image_projector import ImageProjModel
+from diffusers.models.modeling_utils import ModelMixin
+from diffusers.configuration_utils import ConfigMixin, register_to_config
+
+class ImageProjModel(ModelMixin, ConfigMixin):
+    """Projection Model"""
+    @register_to_config
+    def __init__(
+        self, 
+        cross_attention_dim=1024, 
+        image_embedding_dim=1024, 
+        extra_context_tokens=4, 
+        learnable_embedding=False
+    ):
+        super().__init__()
+
+        self.cross_attention_dim = cross_attention_dim
+        self.extra_context_tokens = extra_context_tokens
+        self.proj = nn.Linear(image_embedding_dim, self.extra_context_tokens * cross_attention_dim)
+        self.norm = nn.LayerNorm(cross_attention_dim)
+        
+        if learnable_embedding:
+            self.learnable_embedding = nn.Embedding()
+
+
+    def forward(self, image_embeds):
+        import pdb
+        pdb.set_trace()
+        extra_context_tokens = self.proj(image_embeds).reshape(
+            -1, self.extra_context_tokens, self.cross_attention_dim
+        )
+        extra_context_tokens = self.norm(extra_context_tokens)
+        return extra_context_tokens
 
 
 def _make_fusion_block(features, use_bn, size=None):

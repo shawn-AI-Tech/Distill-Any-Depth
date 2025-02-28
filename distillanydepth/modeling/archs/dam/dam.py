@@ -252,39 +252,9 @@ class DPTHead(nn.Module):
 
         head_features_1 = features
 
-        # if nclass > 1:
-        #     self.scratch.output_conv = nn.Sequential(
-        #         nn.Conv2d(head_features_1, head_features_1, kernel_size=3, stride=1, padding=1),
-        #         nn.ReLU(True),
-        #         nn.Conv2d(head_features_1, nclass, kernel_size=1, stride=1, padding=0),
-        #     )
-        # else:
 
         self.scratch.output_conv1 = nn.Conv2d(head_features_1, head_features_1 // 2, kernel_size=3, stride=1, padding=1)
         
-        # if 'metric' in mode:
-        #     num_depth_regressor_anchor = 512
-        #     # head_features_2 = num_depth_regressor_anchor
-        #     self.scratch.output_conv2 = nn.Sequential(
-        #         nn.Conv2d(head_features_1 // 2, num_depth_regressor_anchor, kernel_size=3, stride=1, padding=1),
-        #         nn.ReLU(True),
-        #         nn.Conv2d(num_depth_regressor_anchor, num_depth_regressor_anchor, kernel_size=1, stride=1, padding=0),
-        #         # nn.Sigmoid()
-        #     )
-
-        # elif 'disparity' in mode or 'rel_depth' in mode:
-        #     head_features_2 = 32
-
-        #     self.scratch.output_conv2 = nn.Sequential(
-        #         nn.Conv2d(head_features_1 // 2, head_features_2, kernel_size=3, stride=1, padding=1),
-        #         nn.ReLU(True),
-        #         nn.Conv2d(head_features_2, 1, kernel_size=1, stride=1, padding=0),
-        #         nn.ReLU(True),
-        #         nn.Identity(),
-        #     )
-        # else:
-        #     raise NotImplementedError
-
         head_features_2 = 32
 
         self.scratch.output_conv2 = nn.Sequential(
@@ -329,8 +299,6 @@ class DPTHead(nn.Module):
         out = F.interpolate(out, (int(patch_h * 14), int(patch_w * 14)), mode="bilinear", align_corners=True)
         out = self.scratch.output_conv2(out)
 
-        # print(out.min())
-        # import pdb;pdb.set_trace()
 
         return out
         
@@ -371,14 +339,7 @@ class DepthAnything(nn.Module, PyTorchModelHubMixin):
         }
 
         self.backbone_name = encoder
-        # in case the Internet connection is not stable, please load the DINOv2 locally
-        # if localhub:
-        #     assert type(localhub) == str
-        #     # self.backbone = torch.hub.load(localhub, 'dinov2_{:}14'.format(encoder), source='local', pretrained=False)
-        #     self.backbone = torch.hub.load(localhub, 'dinov2_{:}14'.format(encoder), source='local', pretrained=True)
-        # else:
-        #     self.backbone = torch.hub.load('facebookresearch/dinov2', 'dinov2_{:}14'.format(encoder))
-        
+
         if use_registers:
             if encoder == 'vitl':
                 checkpoint='data/weights/dinov2/dinov2_vitl14_reg4_pretrain.pth'
@@ -391,18 +352,7 @@ class DepthAnything(nn.Module, PyTorchModelHubMixin):
         else:
             if encoder == 'vitl':
                 if pretrain_type == 'dinov2':
-                    checkpoint='data/weights/dinov2/dinov2_vitl14_pretrain.pth'
-                    self.backbone = vit_large(checkpoint=checkpoint, del_mask_token=del_mask_token)
-
-                elif pretrain_type=='imagenet':
-                    checkpoint='data/weights/imagenet-vit-large/jx_vit_large_patch16_224_in21k-606da67d.pth'
-                    with open(checkpoint, "rb") as f:
-                        state_dict = torch.load(f)
-
-                    self.backbone = vit_large_patch16_224(dynamic_img_size=True)
-                    self.backbone.head = nn.Identity()
-                    self.backbone.head_drop = nn.Identity()
-                    self.backbone.load_state_dict(state_dict, strict=False)
+                    self.backbone = vit_large(checkpoint=None, del_mask_token=del_mask_token)
                 else:
                     raise NotImplementedError
 
@@ -410,15 +360,6 @@ class DepthAnything(nn.Module, PyTorchModelHubMixin):
             elif encoder == 'vitb':
                 self.backbone = vit_base(checkpoint=None, del_mask_token=del_mask_token)
 
-            elif encoder == 'vitg':
-                from geobench.depthanything_v2.dinov2 import DINOv2
-                checkpoint='data/weights/dinov2/dinov2_vitg14_pretrain.pth'
-                self.backbone = DINOv2(model_name=encoder)
-                miss, unexpected = self.backbone.load_state_dict(torch.load(checkpoint, map_location='cpu'), strict=False)
-                print('missing keys:', miss)
-                print('unexpected keys:', unexpected)
-                # import pdb;pdb.set_trace()
-                # self.backbone = vit_giant2(checkpoint=checkpoint)
             else:
                 raise NotImplementedError
 
@@ -435,7 +376,7 @@ class DepthAnything(nn.Module, PyTorchModelHubMixin):
         use_clstoken=use_clstoken,
         num_depth_regressor_anchor=num_depth_regressor_anchor,
         )
-        # import pdb;pdb.set_trace()
+
 
         self.wo_relu_1_2_channel = wo_relu_1_2_channel
 
@@ -454,8 +395,6 @@ class DepthAnything(nn.Module, PyTorchModelHubMixin):
     def forward(self, x):
 
         bs, _, h, w = x.shape
-        
-        # features = self.backbone.get_intermediate_layers(x, 4, return_class_token=True)
 
         if self.pretrain_type=='dinov2':
             features = self.backbone.get_intermediate_layers(x, self.intermediate_layer_idx[self.backbone_name], return_class_token=True)
@@ -467,28 +406,6 @@ class DepthAnything(nn.Module, PyTorchModelHubMixin):
         else:
             raise NotImplementedError
 
-        # import pdb;pdb.set_trace()
-        
-        # if 'metric' in self.mode:
-        #     prob_feature = self.depth_head(features, patch_h, patch_w)
-        #     prob_feature = F.interpolate(prob_feature, size=(h, w), mode="bilinear", align_corners=True)
-        #     prob = prob_feature.softmax(dim=1)
-
-        #     if "depth_expectation_anchor" not in self._buffers:
-        #         self.register_depth_expectation_anchor(self.num_depth_regressor_anchor, bs)
-
-        #     depth = compute_depth_expectation(
-        #         prob,
-        #         self.depth_expectation_anchor[:bs, ...]
-        #     ).unsqueeze(1)
-
-        # elif 'disparity' in self.mode or 'rel_depth' in self.mode:
-        #     depth = self.depth_head(features, patch_h, patch_w)
-        #     depth = F.interpolate(depth, size=(h, w), mode="bilinear", align_corners=True)
-        #     # import pdb;pdb.set_trace()
-        #     depth = F.relu(depth)
-        # else:
-        #     raise NotImplementedError
     
         depth = self.depth_head(features, patch_h, patch_w)
         depth = F.interpolate(depth, size=(h, w), mode="bilinear", align_corners=True)
@@ -497,29 +414,5 @@ class DepthAnything(nn.Module, PyTorchModelHubMixin):
             depth = F.relu(depth)
         else:
             depth[:, 2:] = F.relu(depth[:, 2:])
-        # import pdb;pdb.set_trace()
 
         return depth, features[3][0]
-
-
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument(
-        "--encoder",
-        default="vits",
-        type=str,
-        choices=["vits", "vitb", "vitl", "vitg"],
-    )
-    args = parser.parse_args()
-    
-    # model = DepthAnything.from_pretrained("LiheYoung/depth_anything_{:}14".format(args.encoder))
-    # model = DepthAnything.from_pretrained("LiheYoung/depth_anything_{:}14".format(args.encoder))
-    # print(model)
-    device = 'cuda'
-    image = torch.randn(1,3, 420, 420).to(device)
-    local_hub = "~/.cache/torch/hub/facebookresearch_dinov2_main/"
-    model = DepthAnything(localhub=local_hub,).to(device)
-    output = model(image)
-    import pdb;pdb.set_trace()
-    # .from_pretrained("LiheYoung/depth_anything_{:}14".format(args.encoder))
-    print(model)

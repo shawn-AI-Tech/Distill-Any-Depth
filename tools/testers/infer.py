@@ -73,10 +73,12 @@ def load_model_by_name(arch_name, checkpoint_path, device):
 
     else:
         raise NotImplementedError(f"Unknown architecture: {arch_name}")
-    # 使用 safetensors 加载模型权重
-    model_weights = load_file(checkpoint_path)  # safetensors 加载方式
+    
+    # safetensors 
+    model_weights = load_file(checkpoint_path)
     model.load_state_dict(model_weights)
-    model = model.to(device)  # 确保模型在正确的设备上
+    del model_weights
+    torch.cuda.empty_cache()
     return model
 
 # Helper function for directory checks
@@ -95,8 +97,8 @@ def process_images(validation_images, image_logs_folder, transform, model, devic
 
         with torch.autocast("cuda"):
             pred_disp, _ = model(validation_image) if 'midas' not in args.arch_name else model(validation_image)
-            pred_disp_np = pred_disp.cpu().detach().numpy()[0, :, :, :].transpose(1, 2, 0)
-            pred_disp = (pred_disp_np - pred_disp_np.min()) / (pred_disp_np.max() - pred_disp_np.min())
+        pred_disp_np = pred_disp.cpu().detach().numpy()[0, :, :, :].transpose(1, 2, 0)
+        pred_disp = (pred_disp_np - pred_disp_np.min()) / (pred_disp_np.max() - pred_disp_np.min())
 
         cmap = "Spectral_r" if args.mode != 'metric' else 'Spectral_r'
         depth_colored = colorize_depth_maps(pred_disp[None, ...], 0, 1, cmap=cmap).squeeze()
@@ -111,6 +113,8 @@ def process_images(validation_images, image_logs_folder, transform, model, devic
         images.append(image_out)
         image_out.save(osp.join(image_logs_folder, f'da_sota_{i}.jpg'))
         print(f'{i} OK')
+        torch.cuda.empty_cache()
+
     return images
 
 def main(args, num_gpus):
@@ -130,19 +134,12 @@ def main(args, num_gpus):
     validation_images = glob('data/input/*')
 
     # Define image transformation
-    if args.arch_name != 'midas':
-        resize_h, resize_w = 756, 756
-        transform = Compose([
-            Resize(resize_w, resize_h, resize_target=False, keep_aspect_ratio=True, ensure_multiple_of=14, resize_method='lower_bound', image_interpolation_method=cv2.INTER_CUBIC),
-            NormalizeImage(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
-            PrepareForNet()
-        ])
-    else:
-        transform = Compose([
-            Resize(512, 512, resize_target=None, keep_aspect_ratio=False, ensure_multiple_of=32, resize_method='minimal', image_interpolation_method=cv2.INTER_CUBIC),
-            NormalizeImage(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5]),
-            PrepareForNet()
-        ])
+    resize_h, resize_w = args.processing_res, args.processing_res
+    transform = Compose([
+        Resize(resize_w, resize_h, resize_target=False, keep_aspect_ratio=False, ensure_multiple_of=14, resize_method='lower_bound', image_interpolation_method=cv2.INTER_CUBIC),
+        NormalizeImage(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
+        PrepareForNet()
+    ])
 
     images = process_images(validation_images, image_logs_folder, transform, model, device)
     

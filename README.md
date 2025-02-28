@@ -62,10 +62,6 @@ pip install -r requirements.txt
 # Navigate to the Detectron2 directory and install it
 cd detectron2
 pip install -e .
-
-# Go back to the previous directory and install this package
-cd ..
-pip install -e .
 ```
 
 To download pre-trained checkpoints follow the code snippet below:

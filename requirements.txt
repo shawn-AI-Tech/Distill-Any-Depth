@@ -6,4 +6,7 @@ opencv-python
 matplotlib
 huggingface_hub
 timm
+yapf
+addict
+diffusers
 safetensors

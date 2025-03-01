@@ -40,7 +40,7 @@ We present Distill-Any-Depth, a new SOTA monocular depth estimation model traine
 
 We provide **two models** of varying scales for robust relative depth estimation:
 
-| Model | Pre-trained | Params | Checkpoint |
+| Model | Architecture | Params | Checkpoint |
 |:-|:-:|:-:|:-:|
 | Distill-Any-Depth-Multi-Teacher-Base | Dav2-base | 97.5M | [Download](https://huggingface.co/xingyang1/Distill-Any-Depth/resolve/main/base/model.safetensors?download=true) |
 | Distill-Any-Depth-Multi-Teacher-Large | Dav2-large | 335.3M | [Download](https://huggingface.co/xingyang1/Distill-Any-Depth/resolve/main/large/model.safetensors?download=true) |

@@ -30,7 +30,7 @@ We present Distill-Any-Depth, a new SOTA monocular depth estimation model traine
 ![teaser](data/teaser/depthmap.png)
 
 ## News
-- **2025-03-02:🔥🔥🔥** Our demo is updated to GPU version. Enjoy it!
+- **2025-03-02:🔥🔥🔥** Our demo is updated to GPU version. Enjoy it! We also include the Gradio demo code in this repo.
 - **2025-02-26:🔥🔥🔥** Paper, project page, code, models, and demos are  released.
 
 ## TODO
@@ -97,6 +97,12 @@ for model in "${model_list[@]}"; do
         --output_dir output/${model} \  # Directory to save the output results
         --arch_name 'depthanything-large' \  # Model architecture name (must match the pre-trained model)
 done
+```
+
+## Gradio demo
+We also include the Gradio demo code:
+```bash
+python app.py
 ```
 
 ## More Results

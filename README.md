@@ -30,6 +30,7 @@ We present Distill-Any-Depth, a new SOTA monocular depth estimation model traine
 ![teaser](data/teaser/depthmap.png)
 
 ## News
+- **2025-03-02:🔥🔥🔥** Our demo is updated to GPU version. Enjoy it!
 - **2025-02-26:🔥🔥🔥** Paper, project page, code, models, and demos are  released.
 
 ## TODO

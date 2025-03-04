@@ -116,11 +116,11 @@ pip install -e .
 ```
 Make sure you can connect to Hugging Face, or use the local path.
 ```bash
-    # if use hf_hub_download, you can use the following code
-    checkpoint_path = hf_hub_download(repo_id=f"xingyang1/Distill-Any-Depth", filename=f"large/model.safetensors", repo_type="model")
+# if use hf_hub_download, you can use the following code
+checkpoint_path = hf_hub_download(repo_id=f"xingyang1/Distill-Any-Depth", filename=f"large/model.safetensors", repo_type="model")
 
-    # if use local path, you can use the following code
-    # checkpoint_path = "path/to/your/model.safetensors"
+# if use local path, you can use the following code
+# checkpoint_path = "path/to/your/model.safetensors"
 ```
 in the end, 
 ```bash

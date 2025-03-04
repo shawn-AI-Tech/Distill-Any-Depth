@@ -77,7 +77,7 @@ We provide a helper script to run the model on a single image directly:
 ```bash
 # Run prediction on a single image using the helper script
 source scripts/00_infer.sh
-or
+# or use bash
 bash scripts/00_infer.sh
 ```
 

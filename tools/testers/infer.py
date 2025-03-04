@@ -30,14 +30,8 @@ def argument_parser():
     parser.add_argument("--arch_name", type=str, default="depthanything-large", choices=['depthanything-large', 'depthanything-base', 'midas'], help="Select a method for inference.")
     parser.add_argument("--mode", type=str, default="disparity", choices=['rel_depth', 'metric_depth', 'disparity'], help="Select a method for inference.")
     parser.add_argument("--checkpoint", type=str, default="prs-eth/marigold-v1-0", help="Checkpoint path or hub name.")
-    parser.add_argument("--unet_ckpt_path", type=str, default=None, help="Checkpoint path for unet.")
     parser.add_argument("--output_dir", type=str, required=True, help="Output directory.")
-    parser.add_argument("--denoise_steps", type=int, default=50, help="Diffusion denoising steps.")
-    parser.add_argument("--ensemble_size", type=int, default=10, help="Number of predictions to be ensembled.")
-    parser.add_argument("--half_precision", "--fp16", action="store_true", help="Run with half-precision (16-bit float).")
-    parser.add_argument("--processing_res", type=int, default=0, help="Maximum resolution of processing.")
-    parser.add_argument("--output_processing_res", action="store_true", help="Output depth at resized operating resolution.")
-    parser.add_argument("--resample_method", type=str, default="bilinear", help="Resampling method used to resize images.")
+    parser.add_argument("--processing_res", type=int, default=700, help="Maximum resolution of processing.")
     parser.add_argument("--seed", type=int, default=None, help="Random seed.")
     return parser
 

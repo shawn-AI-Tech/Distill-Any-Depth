@@ -114,7 +114,7 @@ pip install -r requirements.txt
 
 pip install -e .
 ```
-Make sure you can connect to Hugging Face, or use the local path.
+Make sure you can connect to Hugging Face, or use the local path. (app.py)
 ```bash
 # if use hf_hub_download, you can use the following code
 checkpoint_path = hf_hub_download(repo_id=f"xingyang1/Distill-Any-Depth", filename=f"large/model.safetensors", repo_type="model")
@@ -163,6 +163,7 @@ If you find our work useful, please cite the following paper:
 - [GenPercept](https://github.com/aim-uofa/GenPercept)
 - [GeoBench: 3D Geometry Estimation Made Easy](https://github.com/aim-uofa/geobench)
 - [HDN](https://github.com/icoz69/HDN)
+- [Detectron2](https://github.com/facebookresearch/detectron2)
 
 
 

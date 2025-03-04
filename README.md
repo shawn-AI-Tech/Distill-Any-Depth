@@ -93,7 +93,7 @@ for model in "${model_list[@]}"; do
     python tools/testers/infer.py \
         --seed 1234 \  # Set random seed for reproducibility
         --checkpoint 'checkpoint/large/model.safetensors' \  # Path to the pre-trained model checkpoint
-        --processing_res 0 \  # Resolution for processing (0 to keep original resolution)
+        --processing_res 0 \ 
         --output_dir output/${model} \  # Directory to save the output results
         --arch_name 'depthanything-large' \  # [depthanything-large, depthanything-base]
 done

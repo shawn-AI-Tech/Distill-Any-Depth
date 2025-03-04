@@ -100,9 +100,42 @@ done
 ```
 
 ## Gradio demo
-We also include the Gradio demo code:
+We also include the Gradio demo code, Please clone the project and set up the environment using pip install.
+
+```bash
+# Create a new conda environment with Python 3.10
+conda create -n distill-any-depth -y python=3.10
+
+# Activate the created environment
+conda activate distill-any-depth
+
+# Install the required Python packages
+pip install -r requirements.txt
+
+pip install -e .
+```
+Make sure you can connect to Hugging Face, or use the local path.
+```bash
+    # if use hf_hub_download, you can use the following code
+    checkpoint_path = hf_hub_download(repo_id=f"xingyang1/Distill-Any-Depth", filename=f"large/model.safetensors", repo_type="model")
+
+    # if use local path, you can use the following code
+    # checkpoint_path = "path/to/your/model.safetensors"
+```
+in the end, 
 ```bash
 python app.py
+
+:~/Distill-Any-Depth-main# python app.py 
+xFormers not available
+xFormers not available
+xFormers not available
+xFormers not available
+Running on local URL:  http://127.0.0.1:7860
+
+To create a public link, set `share=True` in `launch()`.
+IMPORTANT: You are using gradio version 4.36.0, however version 4.44.1 is available, please upgrade.
+--------
 ```
 
 ## More Results

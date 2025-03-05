@@ -167,7 +167,9 @@ If you find our work useful, please cite the following paper:
 - [HDN](https://github.com/icoz69/HDN)
 - [Detectron2](https://github.com/facebookresearch/detectron2)
 
+## Star History
 
+[![Star History Chart](https://api.star-history.com/svg?repos=Westlake-AGI-Lab/Distill-Any-Depth&type=Date)](https://star-history.com/#Westlake-AGI-Lab/Distill-Any-Depth&Date)
 
 ## License
 This sample code is released under the MIT license. See [LICENSE](LICENSE) for more details.

@@ -25,7 +25,7 @@
 
 
 
-We present Distill-Any-Depth, a new SOTA monocular depth estimation model trained with our proposed knowledge distillation algorithms. Models with various seizes are available in this repo.
+We present Distill-Any-Depth, a new SOTA monocular depth estimation model trained with our proposed knowledge distillation algorithms. Models with various sizes are available in this repo.
 
 ![teaser](data/teaser/depthmap.png)
 

@@ -38,6 +38,11 @@ def argument_parser():
 # Helper function for model loading
 def load_model_by_name(arch_name, checkpoint_path, device):
     model_kwargs = dict(
+        vits=dict(
+            encoder='vits', 
+            features=64,
+            out_channels=[48, 96, 192, 384]
+        ),
         vitb=dict(
             encoder='vitb',
             features=128,
@@ -63,6 +68,9 @@ def load_model_by_name(arch_name, checkpoint_path, device):
 
     elif arch_name == 'depthanything-base':
         model = DepthAnythingV2(**model_kwargs['vitb']).to(device)
+        # checkpoint_path = hf_hub_download(repo_id=f"xingyang1/Distill-Any-Depth", filename=f"base/model.safetensors", repo_type="model")
+    elif arch_name == 'depthanything-small':
+        model = DepthAnythingV2(**model_kwargs['vits']).to(device)
         # checkpoint_path = hf_hub_download(repo_id=f"xingyang1/Distill-Any-Depth", filename=f"base/model.safetensors", repo_type="model")
 
     else:

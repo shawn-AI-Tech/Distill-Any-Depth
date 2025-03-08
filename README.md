@@ -30,6 +30,7 @@ We present Distill-Any-Depth, a new SOTA monocular depth estimation model traine
 ![teaser](data/teaser/depthmap.png)
 
 ## News
+- **2025-03-08:** We release the small size of our model(Dav2).
 - **2025-03-02:🔥🔥🔥** Our demo is updated to GPU version. Enjoy it! We also include the Gradio demo code in this repo.
 - **2025-02-26:🔥🔥🔥** Paper, project page, code, models, and demos are  released.
 
@@ -43,6 +44,7 @@ We provide **two models** of varying scales for robust relative depth estimation
 
 | Model | Architecture | Params | Checkpoint |
 |:-|:-:|:-:|:-:|
+| Distill-Any-Depth-Multi-Teacher-Small | Dav2-small | 24.8M | [Download](https://huggingface.co/xingyang1/Distill-Any-Depth/tree/main/small/model.safetensors?download=true) |
 | Distill-Any-Depth-Multi-Teacher-Base | Dav2-base | 97.5M | [Download](https://huggingface.co/xingyang1/Distill-Any-Depth/resolve/main/base/model.safetensors?download=true) |
 | Distill-Any-Depth-Multi-Teacher-Large | Dav2-large | 335.3M | [Download](https://huggingface.co/xingyang1/Distill-Any-Depth/resolve/main/large/model.safetensors?download=true) |
 

@@ -44,7 +44,7 @@ We provide **two models** of varying scales for robust relative depth estimation
 
 | Model | Architecture | Params | Checkpoint |
 |:-|:-:|:-:|:-:|
-| Distill-Any-Depth-Multi-Teacher-Small | Dav2-small | 24.8M | [Download](https://huggingface.co/xingyang1/Distill-Any-Depth/tree/main/small/model.safetensors?download=true) |
+| Distill-Any-Depth-Multi-Teacher-Small | Dav2-small | 24.8M | [Download](https://huggingface.co/xingyang1/Distill-Any-Depth/resolve/main/small/model.safetensors?download=true) |
 | Distill-Any-Depth-Multi-Teacher-Base | Dav2-base | 97.5M | [Download](https://huggingface.co/xingyang1/Distill-Any-Depth/resolve/main/base/model.safetensors?download=true) |
 | Distill-Any-Depth-Multi-Teacher-Large | Dav2-large | 335.3M | [Download](https://huggingface.co/xingyang1/Distill-Any-Depth/resolve/main/large/model.safetensors?download=true) |
 

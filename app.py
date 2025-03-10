@@ -3,6 +3,7 @@ import torch
 from PIL import Image
 import numpy as np
 from distillanydepth.modeling.archs.dam.dam import DepthAnything
+from distillanydepth.depth_anything_v2.dpt import DepthAnythingV2
 from distillanydepth.utils.image_util import chw2hwc, colorize_depth_maps
 from distillanydepth.midas.transforms import Resize, NormalizeImage, PrepareForNet
 from torchvision.transforms import Compose
@@ -56,16 +57,12 @@ def process_image(image, model, device):
     return depth_image
 
 # Gradio interface function
-def gradio_interface(image):
+def gradio_interface(image, model_size):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    model_kwargs = dict(
-        vitb=dict(
-            encoder='vitb',
-            features=128,
-            out_channels=[96, 192, 384, 768],
-        ),
-        vitl=dict(
+    # 根据用户选择的模型大小加载不同的配置
+    model_kwargs = {
+        "large": dict(
             encoder="vitl", 
             features=256, 
             out_channels=[256, 512, 1024, 1024], 
@@ -75,16 +72,34 @@ def gradio_interface(image):
             mode='disparity',
             pretrain_type='dinov2',
             del_mask_token=False
+        ),
+        "base": dict(
+            encoder='vitb',
+            features=128,
+            out_channels=[96, 192, 384, 768],
+        ),
+        "small": dict(
+            encoder='vits',
+            features=64,
+            out_channels=[48, 96, 192, 384],
         )
-    )
-    # Load model
-    model = DepthAnything(**model_kwargs['vitl']).to(device)
-    # if use hf_hub_download, you can use the following code
-    checkpoint_path = hf_hub_download(repo_id=f"xingyang1/Distill-Any-Depth", filename=f"large/model.safetensors", repo_type="model")
+    }
 
-    # if use local path, you can use the following code
-    # checkpoint_path = "path/to/your/model.safetensors"
+    # 根据用户选择的模型大小加载对应的 checkpoint
+    if model_size == "large":
+        checkpoint_path = hf_hub_download(repo_id=f"xingyang1/Distill-Any-Depth", filename=f"large/model.safetensors", repo_type="model")
+    elif model_size == "base":
+        checkpoint_path = hf_hub_download(repo_id=f"xingyang1/Distill-Any-Depth", filename=f"base/model.safetensors", repo_type="model")
+    elif model_size == "small":
+        checkpoint_path = hf_hub_download(repo_id=f"xingyang1/Distill-Any-Depth", filename=f"small/model.safetensors", repo_type="model")
+    else:
+        raise ValueError(f"Unknown model size: {model_size}")
 
+    # 加载模型
+    if model_size == "large":
+        model = DepthAnything(**model_kwargs[model_size]).to(device)
+    else:
+        model = DepthAnythingV2(**model_kwargs[model_size]).to(device)
     model_weights = load_file(checkpoint_path)
     model.load_state_dict(model_weights)
     model = model.to(device)
@@ -92,18 +107,21 @@ def gradio_interface(image):
     if model is None:
         return None
     
-    # Process image and return output
+    # 处理图像并返回结果
     depth_image = process_image(image, model, device)
     return depth_image
 
-# Create Gradio interface
+# 创建 Gradio 界面
 iface = gr.Interface(
     fn=gradio_interface,
-    inputs=gr.Image(type="pil"),  # Only image input, no mode selection
-    outputs=gr.Image(type="pil"),  # Only depth image output, no debug info
+    inputs=[
+        gr.Image(type="pil"),  # 图像输入
+        gr.Dropdown(choices=["large", "base", "small"], label="Model Size", value="large")  # 模型大小选择
+    ],
+    outputs=gr.Image(type="pil"),  # 深度图输出
     title="Depth Estimation Demo",
-    description="Upload an image to see the depth estimation results. Our model is running on GPU for faster processing."
+    description="Upload an image and select a model size (large, base, or small) to see the depth estimation results."
 )
 
-# Launch the Gradio interface
+# 启动 Gradio 界面
 iface.launch()
